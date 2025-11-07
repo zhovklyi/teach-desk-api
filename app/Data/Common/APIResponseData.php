@@ -10,16 +10,16 @@ class APIResponseData extends Data
         public bool $success,
         public mixed $data = null,
         public ?string $message = null,
-        public mixed $meta = null,
+        public ?int $code = 200,
     ) {}
 
-    public static function success(mixed $data = null, ?string $message = null, mixed $meta = null): self
+    public static function success(mixed $data = null, ?string $message = null, ?int $code = 200): self
     {
-        return new self(true, $data, $message, $meta);
+        return new self(true, $data, $message, $code);
     }
 
-    public static function error(string $message, mixed $meta = null, mixed $data = null): self
+    public static function error(string $message, int $code, mixed $data = null): self
     {
-        return new self(false, $data, $message, $meta);
+        return new self(false, $data, $message, $code);
     }
 }

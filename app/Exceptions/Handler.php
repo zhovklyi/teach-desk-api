@@ -19,29 +19,23 @@ class Handler extends ExceptionHandler
     public function register(): void
     {
         $this->renderable(function (ValidationException $e) {
-            $payload = APIResponseData::error('The given data was invalid.', [
-                'errors' => $e->errors(),
-            ]);
-
-            return response()->json($payload->toArray(), 422);
+            return APIResponseData::error(
+                message: 'The given data was invalid.',
+                code: 422,
+                data: ['errors' => $e->errors()],
+            );
         });
 
         $this->renderable(function (AuthenticationException $e) {
-            $payload = APIResponseData::error('Unauthenticated.');
-
-            return response()->json($payload->toArray(), 401);
+            return APIResponseData::error(message: 'Unauthenticated.', code: 401);
         });
 
         $this->renderable(function (ModelNotFoundException $e) {
-            $payload = APIResponseData::error('Resource not found.');
-
-            return response()->json($payload->toArray(), 404);
+            return APIResponseData::error(message: 'Resource not found.', code: 404);
         });
 
         $this->renderable(function (NotFoundHttpException $e) {
-            $payload = APIResponseData::error('Route not found.');
-
-            return response()->json($payload->toArray(), 404);
+            return APIResponseData::error(message: 'Route not found.', code: 404);
         });
 
         // Fallback for any other exception
@@ -50,11 +44,9 @@ class Handler extends ExceptionHandler
             $status = $e instanceof HttpExceptionInterface ? $e->getStatusCode() : 500;
 
             // Avoid leaking internal messages in production for 500s
-            $message = $status >= 500 ? 'Server error.' : ($e->getMessage() ?: 'Error');
+            $message = $status >= 500 ? 'Server error.' : 'An error occured.';
 
-            $payload = APIResponseData::error($message);
-
-            return response()->json($payload->toArray(), $status);
+            return APIResponseData::error(message: $message, code: $status);
         });
     }
 }
